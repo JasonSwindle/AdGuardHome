@@ -88,16 +88,10 @@ const Logs = (props) => {
         }
     };
 
-    useEffect(() => {
-        mediaQuery.addListener(mediaQueryHandler);
-
-        return () => mediaQuery.removeListener(mediaQueryHandler);
-    }, []);
-
     const closeModal = () => setModalOpened(false);
 
     const getLogs = (older_than, page, initial) => {
-        if (props.queryLogs.enabled) {
+        if (enabled) {
             props.getLogs({
                 older_than,
                 page,
@@ -108,6 +102,8 @@ const Logs = (props) => {
     };
 
     useEffect(() => {
+        mediaQuery.addListener(mediaQueryHandler);
+
         (async () => {
             setIsLoading(true);
             dispatch(setLogsPage(TABLE_FIRST_PAGE));
@@ -115,7 +111,7 @@ const Logs = (props) => {
             dispatch(getClients());
             try {
                 await Promise.all([
-                    getLogs(...INITIAL_REQUEST_DATA),
+                    !props?.location?.params && getLogs(...INITIAL_REQUEST_DATA),
                     dispatch(getLogsConfig()),
                     dispatch(getDnsConfig()),
                 ]);
@@ -125,6 +121,8 @@ const Logs = (props) => {
                 setIsLoading(false);
             }
         })();
+
+        return () => mediaQuery.removeListener(mediaQueryHandler);
     }, []);
 
     const refreshLogs = async () => {
@@ -141,7 +139,7 @@ const Logs = (props) => {
         <>
             {enabled && processingGetConfig && <Loading />}
             {enabled && !processingGetConfig && (
-                <Fragment>
+                <>
                     <Filters
                         filter={filter}
                         setIsLoading={setIsLoading}
@@ -197,7 +195,7 @@ const Logs = (props) => {
                         </svg>
                         {processContent(detailedDataCurrent, buttonType)}
                     </Modal>
-                </Fragment>
+                </>
             )}
             {!enabled && !processingGetConfig && (
                 <Disabled />

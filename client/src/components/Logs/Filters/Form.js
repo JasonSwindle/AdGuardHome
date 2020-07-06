@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import { useTranslation } from 'react-i18next';
@@ -96,7 +96,8 @@ const Form = (props) => {
         setIsLoading(false);
     };
 
-    useEffect(() => clearInput, []);
+    // fixme
+    // useEffect(() => clearInput, []);
 
     return (
         <form className="d-flex flex-wrap form-control--container"

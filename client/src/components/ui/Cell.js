@@ -5,11 +5,13 @@ import { formatNumber } from '../../helpers/helpers';
 import SearchLink from './SearchLink';
 
 const Cell = ({
-    value, percent, color, search,
+    value, percent, color, search, onSearchRedirect,
 }) => (
     <div className="stats__row">
         <div className="stats__row-value mb-1">
-            <strong><SearchLink search={search}>{formatNumber(value)}</SearchLink></strong>
+            <strong><SearchLink search={search} pathname='/logs'
+                                onSearchRedirect={onSearchRedirect}>
+                {formatNumber(value)}</SearchLink></strong>
             <small className="ml-3 text-muted">{percent}%</small>
         </div>
         <div className="progress progress-xs">
@@ -29,6 +31,7 @@ Cell.propTypes = {
     percent: PropTypes.number.isRequired,
     color: PropTypes.string.isRequired,
     search: PropTypes.string,
+    onSearchRedirect: PropTypes.func,
 };
 
 export default Cell;

@@ -9,6 +9,7 @@ import Cell from '../ui/Cell';
 import { getPercent, getIpMatchListStatus } from '../../helpers/helpers';
 import { IP_MATCH_LIST_STATUS, STATUS_COLORS } from '../../helpers/constants';
 import { formatClientCell } from '../../helpers/formatClientCell';
+import { setLogsFilter } from '../../actions/queryLogs';
 
 const getClientsPercentColor = (percent) => {
     if (percent > 50) {
@@ -25,8 +26,8 @@ const countCell = (dnsQueries) => function cell(row) {
     const percent = getPercent(dnsQueries, value);
     const percentColor = getClientsPercentColor(percent);
 
-    return <Cell value={value} percent={percent} color={percentColor}
-                 search={row.original.ip} />;
+    return <Cell value={value} percent={percent} color={percentColor} search={row.original.ip}
+                 onSearchRedirect={setLogsFilter} />;
 };
 
 const renderBlockingButton = (ipMatchListStatus, ip, handleClick, processing) => {
@@ -88,7 +89,7 @@ const Clients = ({
         refresh={refreshButton}
     >
         <ReactTable
-            data={topClients.map(({
+            data={[{ ip: 'test', count: 10, info: 'test', blocked: false }].map(({
                 name: ip, count, info, blocked,
             }) => ({
                 ip,

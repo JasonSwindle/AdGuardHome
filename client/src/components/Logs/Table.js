@@ -48,7 +48,7 @@ const Table = (props) => {
         isLoading,
     } = props;
 
-    const [t] = useTranslation();
+    const { t } = useTranslation();
 
     const toggleBlocking = (type, domain) => {
         const {
