@@ -6,13 +6,12 @@ import debounce from 'lodash/debounce';
 import { useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import {
-    DEBOUNCE_FILTER_TIMEOUT,
-    DEFAULT_LOGS_FILTER,
+    DEBOUNCE_FILTER_TIMEOUT, DEFAULT_LOGS_FILTER,
     FORM_NAME,
     RESPONSE_FILTER,
 } from '../../../helpers/constants';
 import Tooltip from '../../ui/Tooltip';
-import { setLogsFilter } from '../../../actions/queryLogs';
+import { resetLogsFilter } from '../../../actions/queryLogs';
 
 const renderFilterField = ({
     input,
@@ -75,8 +74,8 @@ const Form = (props) => {
         className = '',
         responseStatusClass,
         submit,
-        reset,
         setIsLoading,
+        change,
     } = props;
 
     const { t } = useTranslation();
@@ -85,19 +84,12 @@ const Form = (props) => {
     const debouncedSubmit = debounce(submit, DEBOUNCE_FILTER_TIMEOUT);
     const zeroDelaySubmit = () => setTimeout(submit, 0);
 
-    const clearInput = async () => {
-        await dispatch(setLogsFilter(DEFAULT_LOGS_FILTER));
-        await reset();
-    };
-
     const onInputClear = async () => {
         setIsLoading(true);
-        await clearInput();
+        await change(DEFAULT_LOGS_FILTER);
+        await dispatch(resetLogsFilter());
         setIsLoading(false);
     };
-
-    // fixme
-    // useEffect(() => clearInput, []);
 
     return (
         <form className="d-flex flex-wrap form-control--container"
@@ -141,10 +133,11 @@ Form.propTypes = {
     className: PropTypes.string,
     responseStatusClass: PropTypes.string,
     submit: PropTypes.func.isRequired,
-    reset: PropTypes.func.isRequired,
+    change: PropTypes.func.isRequired,
     setIsLoading: PropTypes.func.isRequired,
 };
 
 export default reduxForm({
     form: FORM_NAME.LOGS_FILTER,
+    enableReinitialize: true,
 })(Form);

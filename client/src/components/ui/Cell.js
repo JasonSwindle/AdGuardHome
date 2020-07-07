@@ -1,17 +1,30 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useHistory } from 'react-router-dom';
 
+import { useDispatch } from 'react-redux';
 import { formatNumber } from '../../helpers/helpers';
-import SearchLink from './SearchLink';
+import { setLogsFilter } from '../../actions/queryLogs';
 
 const Cell = ({
-    value, percent, color, search, onSearchRedirect,
-}) => (
-    <div className="stats__row">
+    value, percent, color, search,
+}) => {
+    const history = useHistory();
+    const dispatch = useDispatch();
+
+    const onClick = async () => {
+        await dispatch(setLogsFilter({
+            search: `"${search}"`,
+            response_status: '',
+        }));
+
+        history.push('/logs');
+    };
+
+    return <div className="stats__row">
         <div className="stats__row-value mb-1">
-            <strong><SearchLink search={search} pathname='/logs'
-                                onSearchRedirect={onSearchRedirect}>
-                {formatNumber(value)}</SearchLink></strong>
+            <strong
+                onClick={onClick}><span className="cursor--pointer">{formatNumber(value)}</span></strong>
             <small className="ml-3 text-muted">{percent}%</small>
         </div>
         <div className="progress progress-xs">
@@ -23,8 +36,8 @@ const Cell = ({
                 }}
             />
         </div>
-    </div>
-);
+    </div>;
+};
 
 Cell.propTypes = {
     value: PropTypes.number.isRequired,

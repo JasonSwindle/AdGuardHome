@@ -2,7 +2,11 @@ import { createAction } from 'redux-actions';
 
 import apiClient from '../api/Api';
 import { normalizeLogs, getParamsForClientsSearch, addClientInfo } from '../helpers/helpers';
-import { TABLE_DEFAULT_PAGE_SIZE, TABLE_FIRST_PAGE } from '../helpers/constants';
+import {
+    DEFAULT_LOGS_FILTER,
+    TABLE_DEFAULT_PAGE_SIZE,
+    TABLE_FIRST_PAGE,
+} from '../helpers/constants';
 import { addErrorToast, addSuccessToast } from './toasts';
 
 const getLogsWithParams = async (config) => {
@@ -102,6 +106,10 @@ export const setLogsFilter = (filter) => async (dispatch) => {
         dispatch(addErrorToast({ error }));
         dispatch(setLogsFilterFailure(error));
     }
+};
+
+export const resetLogsFilter = () => async (dispatch) => {
+    await dispatch(setLogsFilter(DEFAULT_LOGS_FILTER));
 };
 
 export const clearLogsRequest = createAction('CLEAR_LOGS_REQUEST');

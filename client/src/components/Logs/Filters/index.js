@@ -27,14 +27,13 @@ const Filters = ({ filter, refreshLogs, setIsLoading }) => {
                         <use xlinkHref="#update" />
                     </svg>
                 </button>
-
             </h1>
             <Form
                 responseStatusClass="d-sm-block"
                 initialValues={filter}
                 onSubmit={onSubmit}
                 setIsLoading={setIsLoading}
-        />
+            />
         </div>
     );
 };

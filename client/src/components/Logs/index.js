@@ -4,9 +4,10 @@ import { Trans } from 'react-i18next';
 import Modal from 'react-modal';
 import { useDispatch } from 'react-redux';
 import {
-    BLOCK_ACTIONS, smallScreenSize,
+    BLOCK_ACTIONS,
     TABLE_DEFAULT_PAGE_SIZE,
     TABLE_FIRST_PAGE,
+    smallScreenSize,
 } from '../../helpers/constants';
 import Loading from '../ui/Loading';
 import Filters from './Filters';
@@ -15,7 +16,7 @@ import Disabled from './Disabled';
 import { getFilteringStatus } from '../../actions/filtering';
 import { getClients } from '../../actions';
 import { getDnsConfig } from '../../actions/dnsConfig';
-import { getLogsConfig } from '../../actions/queryLogs';
+import { getLogsConfig, resetLogsFilter } from '../../actions/queryLogs';
 import { addSuccessToast } from '../../actions/toasts';
 import './Logs.css';
 
@@ -122,7 +123,12 @@ const Logs = (props) => {
             }
         })();
 
-        return () => mediaQuery.removeListener(mediaQueryHandler);
+        return () => {
+            mediaQuery.removeListener(mediaQueryHandler);
+            (async () => {
+                await dispatch(resetLogsFilter());
+            })();
+        };
     }, []);
 
     const refreshLogs = async () => {

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PropTypes } from 'prop-types';
 import { useDispatch } from 'react-redux';
 
+// TODO: remove
 const SearchLink = (props) => {
     const {
         pathname = '/', children, search = '', onSearchRedirect,
