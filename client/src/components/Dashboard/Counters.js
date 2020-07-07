@@ -4,7 +4,7 @@ import { Trans, withTranslation } from 'react-i18next';
 import round from 'lodash/round';
 
 import Card from '../ui/Card';
-import Tooltip from '../ui/Tooltip';
+import IconTooltip from '../ui/IconTooltip';
 import { formatNumber } from '../../helpers/helpers';
 
 const tooltipType = 'tooltip-custom--narrow';
@@ -39,7 +39,7 @@ const Counters = (props) => {
                     <tr>
                         <td>
                             <Trans>dns_query</Trans>
-                            <Tooltip text={tooltipTitle} type={tooltipType} />
+                            <IconTooltip text={tooltipTitle} type={tooltipType} />
                         </td>
                         <td className="text-right">
                             <span className="text-muted">
@@ -52,7 +52,7 @@ const Counters = (props) => {
                             <Trans components={[<a href="#filters" key="0">link</a>]}>
                                 blocked_by
                             </Trans>
-                            <Tooltip
+                            <IconTooltip
                                 text={t('number_of_dns_query_blocked_24_hours')}
                                 type={tooltipType}
                             />
@@ -66,7 +66,7 @@ const Counters = (props) => {
                     <tr>
                         <td>
                             <Trans>stats_malware_phishing</Trans>
-                            <Tooltip
+                            <IconTooltip
                                 text={t('number_of_dns_query_blocked_24_hours_by_sec')}
                                 type={tooltipType}
                             />
@@ -80,7 +80,7 @@ const Counters = (props) => {
                     <tr>
                         <td>
                             <Trans>stats_adult</Trans>
-                            <Tooltip
+                            <IconTooltip
                                 text={t('number_of_dns_query_blocked_24_hours_adult')}
                                 type={tooltipType}
                             />
@@ -94,7 +94,7 @@ const Counters = (props) => {
                     <tr>
                         <td>
                             <Trans>enforced_save_search</Trans>
-                            <Tooltip
+                            <IconTooltip
                                 text={t('number_of_dns_query_to_safe_search')}
                                 type={tooltipType}
                             />
@@ -108,7 +108,7 @@ const Counters = (props) => {
                     <tr>
                         <td>
                             <Trans>average_processing_time</Trans>
-                            <Tooltip text={t('average_processing_time_hint')} type={tooltipType} />
+                            <IconTooltip text={t('average_processing_time_hint')} type={tooltipType} />
                         </td>
                         <td className="text-right">
                             <span className="text-muted">

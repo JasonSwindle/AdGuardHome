@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import { setLogsFilter } from '../../actions/queryLogs';
 import './LogsSearchLink.css';
+import Tooltip from './Tooltip';
 
 const LogsSearchLink = ({ search, children, link = '/logs' }) => {
     const history = useHistory();
@@ -18,7 +19,7 @@ const LogsSearchLink = ({ search, children, link = '/logs' }) => {
         history.push(link);
     };
 
-    return <span onClick={onClick} className="stats__link">{children}</span>;
+    return <span onClick={onClick} className="stats__link"><Tooltip content='click_to_view_queries'>{children}</Tooltip></span>;
 };
 
 LogsSearchLink.propTypes = {

@@ -543,5 +543,6 @@
     "cache_ttl_min_override_desc": "Override TTL value (minimum) received from upstream server. This value can't larger than 3600 (1 hour)",
     "cache_ttl_max_override_desc": "Override TTL value (maximum) received from upstream server",
     "min_exceeds_max_value": "Minimum value exceeds maximum value",
-    "value_not_larger_than": "Value can't be larger than {{maximum}}"
+    "value_not_larger_than": "Value can't be larger than {{maximum}}",
+    "click_to_view_queries": "Click to view queries"
 }

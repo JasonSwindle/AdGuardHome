@@ -10,7 +10,7 @@ import {
     FORM_NAME,
     RESPONSE_FILTER,
 } from '../../../helpers/constants';
-import Tooltip from '../../ui/Tooltip';
+import IconTooltip from '../../ui/IconTooltip';
 import { resetLogsFilter } from '../../../actions/queryLogs';
 
 const renderFilterField = ({
@@ -46,7 +46,7 @@ const renderFilterField = ({
         </svg>
     </div>
     <span className="input-group-search input-group-search__icon--tooltip">
-        <Tooltip text={tooltip} type='tooltip-custom--logs' />
+        <IconTooltip text={tooltip} type='tooltip-custom--logs' />
     </span>
     {!disabled
     && touched

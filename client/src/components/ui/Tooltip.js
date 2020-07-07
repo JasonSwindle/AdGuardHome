@@ -1,14 +1,50 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import TooltipTrigger from 'react-popper-tooltip';
+import propTypes from 'prop-types';
+import 'react-popper-tooltip/dist/styles.css';
+import { useTranslation } from 'react-i18next';
 
-import './Tooltip.css';
+const Tooltip = ({
+    children, content, placement = 'bottom', trigger = 'hover',
+}) => {
+    const { t } = useTranslation();
 
-const Tooltip = ({ text, type = '' }) => <div data-tooltip={text}
-                                              className={`tooltip-custom ml-1 ${type}`} />;
+    return <TooltipTrigger
+        placement={placement} trigger={trigger} tooltip={({
+            arrowRef,
+            tooltipRef,
+            getArrowProps,
+            getTooltipProps,
+            placement,
+        }) => (
+        <div {...getTooltipProps({
+            ref: tooltipRef,
+            className: 'tooltip-container',
+        })}>
+            <div {...getArrowProps({
+                ref: arrowRef,
+                className: 'tooltip-arrow',
+                'data-placement': placement,
+            })} />
+            {t(content)}
+        </div>
+        )}>
+        {({ getTriggerProps, triggerRef }) => <span
+            {...getTriggerProps({
+                ref: triggerRef,
+                className: 'trigger',
+            })}
+        >{children}</span>}
+    </TooltipTrigger>;
+};
 
 Tooltip.propTypes = {
-    text: PropTypes.string.isRequired,
-    type: PropTypes.string,
+    children: propTypes.oneOfType(
+        [propTypes.element, propTypes.arrayOf(propTypes.element), propTypes.string],
+    ).isRequired,
+    content: propTypes.string.isRequired,
+    placement: propTypes.string,
+    trigger: propTypes.string,
 };
 
 export default Tooltip;
