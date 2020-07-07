@@ -112,7 +112,7 @@ const Logs = (props) => {
             dispatch(getClients());
             try {
                 await Promise.all([
-                    !props?.location?.params && getLogs(...INITIAL_REQUEST_DATA),
+                    getLogs(...INITIAL_REQUEST_DATA),
                     dispatch(getLogsConfig()),
                     dispatch(getDnsConfig()),
                 ]);

@@ -8,7 +8,7 @@ import { normalizeTextarea } from '../../../helpers/helpers';
 import Card from '../../ui/Card';
 import Modal from './Modal';
 import CellWrap from '../../ui/CellWrap';
-import SearchLink from '../../ui/SearchLink';
+import LogsSearchLink from '../../ui/LogsSearchLink';
 
 class ClientsTable extends Component {
     handleFormAdd = (values) => {
@@ -213,8 +213,8 @@ class ClientsTable extends Component {
                 if (!row.value) {
                     return content;
                 }
-                // TODO: find out correct ids
-                return <SearchLink search={row.original.ids[0]}>{content}</SearchLink>;
+
+                return <LogsSearchLink search={row.original.ids[0]}>{content}</LogsSearchLink>;
             },
         },
         {
