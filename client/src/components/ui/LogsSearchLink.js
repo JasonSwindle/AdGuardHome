@@ -2,24 +2,37 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 import { setLogsFilter } from '../../actions/queryLogs';
 import './LogsSearchLink.css';
-import Tooltip from './Tooltip';
 
-const LogsSearchLink = ({ search, children, link = '/logs' }) => {
+const LogsSearchLink = ({
+    search = '', response_status = '', children, link = '/logs',
+}) => {
     const history = useHistory();
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
-    const onClick = async () => {
+    const onSearchRedirect = async () => {
         await dispatch(setLogsFilter({
-            search: `"${search}"`,
-            response_status: '',
+            search: search && `"${search}"`,
+            response_status,
         }));
 
         history.push(link);
     };
 
-    return <span onClick={onClick} className="stats__link"><Tooltip content='click_to_view_queries'>{children}</Tooltip></span>;
+    const onEnterPress = async (e) => {
+        if (e.key === 'Enter') {
+            await onSearchRedirect();
+        }
+    };
+
+    return <a onClick={onSearchRedirect} onKeyDown={onEnterPress}
+              className={'stats__link'}
+              tabIndex={0}
+              title={t('click_to_view_queries')}
+              aria-label={t('click_to_view_queries')}>{children}</a>;
 };
 
 LogsSearchLink.propTypes = {
@@ -27,7 +40,8 @@ LogsSearchLink.propTypes = {
         PropTypes.string,
         PropTypes.number,
         PropTypes.element]).isRequired,
-    search: PropTypes.string.isRequired,
+    search: PropTypes.string,
+    response_status: PropTypes.string,
     link: PropTypes.string,
 };
 

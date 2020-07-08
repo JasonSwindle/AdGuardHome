@@ -323,7 +323,6 @@ class ClientsTable extends Component {
                     >
                         <Trans>client_add</Trans>
                     </button>
-
                     <Modal
                         isModalOpen={isModalOpen}
                         modalType={modalType}
