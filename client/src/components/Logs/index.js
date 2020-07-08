@@ -2,12 +2,14 @@ import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Trans } from 'react-i18next';
 import Modal from 'react-modal';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { useHistory, useParams } from 'react-router-dom';
 import {
     BLOCK_ACTIONS,
     TABLE_DEFAULT_PAGE_SIZE,
     TABLE_FIRST_PAGE,
     smallScreenSize,
+    FORM_NAME,
 } from '../../helpers/constants';
 import Loading from '../ui/Loading';
 import Filters from './Filters';
@@ -16,12 +18,10 @@ import Disabled from './Disabled';
 import { getFilteringStatus } from '../../actions/filtering';
 import { getClients } from '../../actions';
 import { getDnsConfig } from '../../actions/dnsConfig';
-import { getLogsConfig, resetLogsFilter } from '../../actions/queryLogs';
+import { getLogsConfig, resetLogsFilter, setLogsFilter } from '../../actions/queryLogs';
 import { addSuccessToast } from '../../actions/toasts';
 import './Logs.css';
-
-const INITIAL_REQUEST = true;
-const INITIAL_REQUEST_DATA = ['', TABLE_FIRST_PAGE, INITIAL_REQUEST];
+import { formatQueryParams } from '../../helpers/helpers';
 
 export const processContent = (data, buttonType) => Object.entries(data)
     .map(([key, value]) => {
@@ -53,22 +53,39 @@ export const processContent = (data, buttonType) => Object.entries(data)
 
 const Logs = (props) => {
     const dispatch = useDispatch();
+    const history = useHistory();
+    const { response_status: response_status_url_param = '', search: search_url_param = '' } = useParams();
+    const query = useSelector((state) => state.form[FORM_NAME.LOGS_FILTER]?.values);
+
+    const search = query?.search ?? search_url_param;
+    const response_status = query?.response_status ?? response_status_url_param;
+
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < smallScreenSize);
     const [detailedDataCurrent, setDetailedDataCurrent] = useState({});
     const [buttonType, setButtonType] = useState(BLOCK_ACTIONS.BLOCK);
     const [isModalOpened, setModalOpened] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
+
+    useEffect(() => {
+        (async () => {
+            // todo: redirect if params is incorrect
+            history.push(`/logs${formatQueryParams(search, response_status)}`);
+            await dispatch(setLogsFilter({
+                search,
+                response_status,
+            }));
+        })();
+    }, [response_status, search]);
+
     const {
         filtering,
         setLogsPage,
         setLogsPagination,
-        setLogsFilter,
         toggleDetailedLogs,
         dashboard,
         dnsConfig,
         queryLogs: {
-            filter,
             enabled,
             processingGetConfig,
             processingAdditionalLogs,
@@ -112,7 +129,6 @@ const Logs = (props) => {
             dispatch(getClients());
             try {
                 await Promise.all([
-                    getLogs(...INITIAL_REQUEST_DATA),
                     dispatch(getLogsConfig()),
                     dispatch(getDnsConfig()),
                 ]);
@@ -135,8 +151,10 @@ const Logs = (props) => {
         setIsLoading(true);
         await Promise.all([
             dispatch(setLogsPage(TABLE_FIRST_PAGE)),
-            getLogs(...INITIAL_REQUEST_DATA),
+            dispatch(resetLogsFilter()),
         ]);
+        // todo: check reset
+        history.push('/logs');
         dispatch(addSuccessToast('query_log_updated'));
         setIsLoading(false);
     };
@@ -147,11 +165,13 @@ const Logs = (props) => {
             {enabled && !processingGetConfig && (
                 <>
                     <Filters
-                        filter={filter}
+                        filter={{
+                            response_status,
+                            search,
+                        }}
                         setIsLoading={setIsLoading}
                         processingGetLogs={processingGetLogs}
                         processingAdditionalLogs={processingAdditionalLogs}
-                        setLogsFilter={setLogsFilter}
                         refreshLogs={refreshLogs}
                     />
                     <Table

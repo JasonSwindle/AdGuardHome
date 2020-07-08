@@ -6,7 +6,8 @@ import debounce from 'lodash/debounce';
 import { useDispatch } from 'react-redux';
 import classNames from 'classnames';
 import {
-    DEBOUNCE_FILTER_TIMEOUT, DEFAULT_LOGS_FILTER,
+    DEBOUNCE_FILTER_TIMEOUT,
+    DEFAULT_LOGS_FILTER,
     FORM_NAME,
     RESPONSE_FILTER,
 } from '../../../helpers/constants';

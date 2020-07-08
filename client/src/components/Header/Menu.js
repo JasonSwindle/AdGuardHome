@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import enhanceWithClickOutside from 'react-click-outside';
 import classnames from 'classnames';
 import { Trans, withTranslation } from 'react-i18next';
-
+import { formatQueryParams } from '../../helpers/helpers';
 import { SETTINGS_URLS, FILTERS_URLS, MENU_URLS } from '../../helpers/constants';
 import Dropdown from '../ui/Dropdown';
 
@@ -22,7 +22,7 @@ const MENU_ITEMS = [
     // Filters dropdown should have visual order 2
 
     {
-        route: MENU_URLS.logs,
+        route: `${MENU_URLS.logs}${formatQueryParams('', '')}`,
         icon: 'log',
         text: 'query_log',
         order: 3,

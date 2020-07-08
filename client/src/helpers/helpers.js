@@ -618,3 +618,6 @@ export const selectCompletedFields = (values) => Object.entries(values)
         }
         return acc;
     }, {});
+
+export const
+    formatQueryParams = (search, response_status) => `/search=${search}&response_status=${response_status}`;
