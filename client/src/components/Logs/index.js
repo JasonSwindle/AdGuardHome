@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Trans } from 'react-i18next';
 import Modal from 'react-modal';
-import { useDispatch, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import queryString from 'query-string';
 import {
@@ -10,7 +10,6 @@ import {
     TABLE_DEFAULT_PAGE_SIZE,
     TABLE_FIRST_PAGE,
     smallScreenSize,
-    FORM_NAME,
 } from '../../helpers/constants';
 import Loading from '../ui/Loading';
 import Filters from './Filters';
@@ -19,7 +18,7 @@ import Disabled from './Disabled';
 import { getFilteringStatus } from '../../actions/filtering';
 import { getClients } from '../../actions';
 import { getDnsConfig } from '../../actions/dnsConfig';
-import { getLogsConfig, resetLogsFilter, setLogsFilter } from '../../actions/queryLogs';
+import { getLogsConfig, resetFilteredLogs, setFilteredLogs } from '../../actions/queryLogs';
 import { addSuccessToast } from '../../actions/toasts';
 import './Logs.css';
 import { getLogsUrlParams } from '../../helpers/helpers';
@@ -55,11 +54,16 @@ export const processContent = (data, buttonType) => Object.entries(data)
 const Logs = (props) => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { response_status: response_status_url_param = '', search: search_url_param = '' } = queryString.parse(history.location.search);
-    const query = useSelector((state) => state.form[FORM_NAME.LOGS_FILTER]?.values);
 
-    const search = query?.search ?? search_url_param;
-    const response_status = query?.response_status ?? response_status_url_param;
+    const {
+        response_status: response_status_url_param = '',
+        search: search_url_param = '',
+    } = queryString.parse(history.location.search);
+
+    const { filter } = useSelector((state) => state.queryLogs, shallowEqual);
+
+    const search = filter?.search || search_url_param;
+    const response_status = filter?.response_status || response_status_url_param;
 
     const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < smallScreenSize);
     const [detailedDataCurrent, setDetailedDataCurrent] = useState({});
@@ -70,12 +74,13 @@ const Logs = (props) => {
 
     useEffect(() => {
         (async () => {
-            // todo: redirect if params is incorrect
             history.replace(`${getLogsUrlParams(search, response_status)}`);
-            await dispatch(setLogsFilter({
+            setIsLoading(true);
+            await dispatch(setFilteredLogs({
                 search,
                 response_status,
             }));
+            setIsLoading(false);
         })();
     }, [response_status, search]);
 
@@ -143,7 +148,7 @@ const Logs = (props) => {
         return () => {
             mediaQuery.removeListener(mediaQueryHandler);
             (async () => {
-                await dispatch(resetLogsFilter());
+                await dispatch(resetFilteredLogs());
             })();
         };
     }, []);
@@ -152,7 +157,7 @@ const Logs = (props) => {
         setIsLoading(true);
         await Promise.all([
             dispatch(setLogsPage(TABLE_FIRST_PAGE)),
-            dispatch(resetLogsFilter()),
+            dispatch(resetFilteredLogs()),
         ]);
         dispatch(addSuccessToast('query_log_updated'));
         setIsLoading(false);
@@ -238,7 +243,6 @@ Logs.propTypes = {
     setRules: PropTypes.func.isRequired,
     addSuccessToast: PropTypes.func.isRequired,
     setLogsPagination: PropTypes.func.isRequired,
-    setLogsFilter: PropTypes.func.isRequired,
     setLogsPage: PropTypes.func.isRequired,
     toggleDetailedLogs: PropTypes.func.isRequired,
     dnsConfig: PropTypes.object.isRequired,

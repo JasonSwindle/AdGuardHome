@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import { useTranslation } from 'react-i18next';
-import debounce from 'lodash/debounce';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 import {
     DEBOUNCE_FILTER_TIMEOUT,
@@ -12,7 +12,9 @@ import {
     RESPONSE_FILTER,
 } from '../../../helpers/constants';
 import IconTooltip from '../../ui/IconTooltip';
-import { resetLogsFilter } from '../../../actions/queryLogs';
+import { setLogsFilter } from '../../../actions/queryLogs';
+import useDebounce from '../../../helpers/useDebounce';
+import { getLogsUrlParams } from '../../../helpers/helpers';
 
 const renderFilterField = ({
     input,
@@ -25,6 +27,7 @@ const renderFilterField = ({
     tooltip,
     meta: { touched, error },
     onClearInputClick,
+    onKeyDown,
 }) => <>
     <div className="input-group-search input-group-search__icon--magnifier">
         <svg className="icons icon--small icon--gray">
@@ -39,7 +42,9 @@ const renderFilterField = ({
         className={className}
         disabled={disabled}
         autoComplete={autoComplete}
-        aria-label={placeholder} />
+        aria-label={placeholder}
+        onKeyDown={onKeyDown}
+    />
     <div
         className={classNames('input-group-search input-group-search__icon--cross', { invisible: input.value.length < 1 })}>
         <svg className="icons icon--smallest icon--gray" onClick={onClearInputClick}>
@@ -64,6 +69,7 @@ renderFilterField.propTypes = {
     disabled: PropTypes.string,
     autoComplete: PropTypes.string,
     tooltip: PropTypes.string,
+    onKeyDown: PropTypes.func,
     meta: PropTypes.shape({
         touched: PropTypes.bool,
         error: PropTypes.object,
@@ -79,31 +85,45 @@ const Form = (props) => {
     const {
         className = '',
         responseStatusClass,
-        submit,
         setIsLoading,
         change,
     } = props;
 
     const { t } = useTranslation();
     const dispatch = useDispatch();
+    const history = useHistory();
 
-    const debouncedSubmit = debounce(submit, DEBOUNCE_FILTER_TIMEOUT);
-    const zeroDelaySubmit = () => setTimeout(submit, 0);
+    const {
+        response_status, search,
+    } = useSelector((state) => state.form[FORM_NAME.LOGS_FILTER].values, shallowEqual);
+
+    const [debouncedSearch, setDebouncedSearch] = useDebounce(search, DEBOUNCE_FILTER_TIMEOUT);
+
+    useEffect(() => {
+        dispatch(setLogsFilter({
+            response_status,
+            search: debouncedSearch,
+        }));
+    }, [response_status, debouncedSearch]);
 
     const onInputClear = async () => {
         setIsLoading(true);
-        await dispatch(resetLogsFilter());
-        await change(FORM_NAMES.search, DEFAULT_LOGS_FILTER[FORM_NAMES.search]);
-        await change(FORM_NAMES.response_status, DEFAULT_LOGS_FILTER[FORM_NAMES.response_status]);
+        setDebouncedSearch(DEFAULT_LOGS_FILTER[FORM_NAMES.search]);
+        history.replace(`${getLogsUrlParams('')}`);
+        change(FORM_NAMES.search, DEFAULT_LOGS_FILTER[FORM_NAMES.search]);
         setIsLoading(false);
     };
 
+    const onEnterPress = (e) => {
+        if (e.key === 'Enter') {
+            setDebouncedSearch(search);
+        }
+    };
+    // todo: trim search
     return (
         <form className="d-flex flex-wrap form-control--container"
               onSubmit={(e) => {
                   e.preventDefault();
-                  zeroDelaySubmit();
-                  debouncedSubmit.cancel();
               }}
         >
             <Field
@@ -114,15 +134,14 @@ const Form = (props) => {
                 className={classNames('form-control--search form-control--transparent', className)}
                 placeholder={t('domain_or_client')}
                 tooltip={t('query_log_strict_search')}
-                onChange={debouncedSubmit}
                 onClearInputClick={onInputClear}
+                onKeyDown={onEnterPress}
             />
             <div className="field__select">
                 <Field
                     name={FORM_NAMES.response_status}
                     component="select"
                     className={classNames('form-control custom-select custom-select--logs custom-select__arrow--left ml-small form-control--transparent', responseStatusClass)}
-                    onChange={zeroDelaySubmit}
                 >
                     {Object.values(RESPONSE_FILTER)
                         .map(({
@@ -136,10 +155,8 @@ const Form = (props) => {
 };
 
 Form.propTypes = {
-    handleChange: PropTypes.func,
     className: PropTypes.string,
     responseStatusClass: PropTypes.string,
-    submit: PropTypes.func.isRequired,
     change: PropTypes.func.isRequired,
     setIsLoading: PropTypes.func.isRequired,
 };

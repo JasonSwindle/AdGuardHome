@@ -90,26 +90,43 @@ export const getLogs = (config) => async (dispatch, getState) => {
 };
 
 export const setLogsFilterRequest = createAction('SET_LOGS_FILTER_REQUEST');
-export const setLogsFilterFailure = createAction('SET_LOGS_FILTER_FAILURE');
-export const setLogsFilterSuccess = createAction('SET_LOGS_FILTER_SUCCESS');
 
+/**
+ *
+ * @param filter
+ * @param {string} filter.search
+ * @param {string} filter.response_status query field of RESPONSE_FILTER object
+ * @returns undefined
+ */
 export const setLogsFilter = (filter) => async (dispatch) => {
-    dispatch(setLogsFilterRequest());
+    try {
+        await dispatch(setLogsFilterRequest({ filter }));
+    } catch (error) {
+        await dispatch(addErrorToast({ error }));
+    }
+};
+
+export const setFilteredLogsRequest = createAction('SET_FILTERED_LOGS_REQUEST');
+export const setFilteredLogsFailure = createAction('SET_FILTERED_LOGS_FAILURE');
+export const setFilteredLogsSuccess = createAction('SET_FILTERED_LOGS_SUCCESS');
+
+export const setFilteredLogs = (filter) => async (dispatch) => {
+    dispatch(setFilteredLogsRequest());
     try {
         const data = await getLogsWithParams({ older_than: '', filter });
         const additionalData = await checkFilteredLogs(data, filter, dispatch);
         const updatedData = additionalData.logs ? { ...data, ...additionalData } : data;
 
-        dispatch(setLogsFilterSuccess({ ...updatedData, filter }));
+        dispatch(setFilteredLogsSuccess({ ...updatedData, filter }));
         dispatch(setLogsPage(TABLE_FIRST_PAGE));
     } catch (error) {
         dispatch(addErrorToast({ error }));
-        dispatch(setLogsFilterFailure(error));
+        dispatch(setFilteredLogsFailure(error));
     }
 };
 
-export const resetLogsFilter = () => async (dispatch) => {
-    await dispatch(setLogsFilter(DEFAULT_LOGS_FILTER));
+export const resetFilteredLogs = () => async (dispatch) => {
+    await dispatch(setFilteredLogs(DEFAULT_LOGS_FILTER));
 };
 
 export const clearLogsRequest = createAction('CLEAR_LOGS_REQUEST');
