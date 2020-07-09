@@ -14,7 +14,7 @@ import {
 import IconTooltip from '../../ui/IconTooltip';
 import { setLogsFilter } from '../../../actions/queryLogs';
 import useDebounce from '../../../helpers/useDebounce';
-import { getLogsUrlParams } from '../../../helpers/helpers';
+import { createOnBlurHandler, getLogsUrlParams } from '../../../helpers/helpers';
 
 const renderFilterField = ({
     input,
@@ -28,36 +28,42 @@ const renderFilterField = ({
     meta: { touched, error },
     onClearInputClick,
     onKeyDown,
-}) => <>
-    <div className="input-group-search input-group-search__icon--magnifier">
-        <svg className="icons icon--small icon--gray">
-            <use xlinkHref="#magnifier" />
-        </svg>
-    </div>
-    <input
-        {...input}
-        id={id}
-        placeholder={placeholder}
-        type={type}
-        className={className}
-        disabled={disabled}
-        autoComplete={autoComplete}
-        aria-label={placeholder}
-        onKeyDown={onKeyDown}
-    />
-    <div
-        className={classNames('input-group-search input-group-search__icon--cross', { invisible: input.value.length < 1 })}>
-        <svg className="icons icon--smallest icon--gray" onClick={onClearInputClick}>
-            <use xlinkHref="#cross" />
-        </svg>
-    </div>
-    <span className="input-group-search input-group-search__icon--tooltip">
+    normalizeOnBlur,
+}) => {
+    const onBlur = (event) => createOnBlurHandler(event, input, normalizeOnBlur);
+
+    return <>
+        <div className="input-group-search input-group-search__icon--magnifier">
+            <svg className="icons icon--small icon--gray">
+                <use xlinkHref="#magnifier" />
+            </svg>
+        </div>
+        <input
+            {...input}
+            id={id}
+            placeholder={placeholder}
+            type={type}
+            className={className}
+            disabled={disabled}
+            autoComplete={autoComplete}
+            aria-label={placeholder}
+            onKeyDown={onKeyDown}
+            onBlur={onBlur}
+        />
+        <div
+            className={classNames('input-group-search input-group-search__icon--cross', { invisible: input.value.length < 1 })}>
+            <svg className="icons icon--smallest icon--gray" onClick={onClearInputClick}>
+                <use xlinkHref="#cross" />
+            </svg>
+        </div>
+        <span className="input-group-search input-group-search__icon--tooltip">
         <IconTooltip text={tooltip} type='tooltip-custom--logs' />
     </span>
-    {!disabled
-    && touched
-    && (error && <span className="form__message form__message--error">{error}</span>)}
-</>;
+        {!disabled
+        && touched
+        && (error && <span className="form__message form__message--error">{error}</span>)}
+    </>;
+};
 
 renderFilterField.propTypes = {
     input: PropTypes.object.isRequired,
@@ -70,6 +76,7 @@ renderFilterField.propTypes = {
     autoComplete: PropTypes.string,
     tooltip: PropTypes.string,
     onKeyDown: PropTypes.func,
+    normalizeOnBlur: PropTypes.func,
     meta: PropTypes.shape({
         touched: PropTypes.bool,
         error: PropTypes.object,
@@ -97,7 +104,11 @@ const Form = (props) => {
         response_status, search,
     } = useSelector((state) => state.form[FORM_NAME.LOGS_FILTER].values, shallowEqual);
 
-    const [debouncedSearch, setDebouncedSearch] = useDebounce(search, DEBOUNCE_FILTER_TIMEOUT);
+    const trimmedSearch = search.trim();
+    const [
+        debouncedSearch,
+        setDebouncedSearch,
+    ] = useDebounce(trimmedSearch, DEBOUNCE_FILTER_TIMEOUT);
 
     useEffect(() => {
         dispatch(setLogsFilter({
@@ -119,7 +130,10 @@ const Form = (props) => {
             setDebouncedSearch(search);
         }
     };
-    // todo: trim search
+
+    const normalizeOnBlur = (data) => data.trim();
+
+    // todo: handle set falsy empty string
     return (
         <form className="d-flex flex-wrap form-control--container"
               onSubmit={(e) => {
@@ -136,6 +150,7 @@ const Form = (props) => {
                 tooltip={t('query_log_strict_search')}
                 onClearInputClick={onInputClear}
                 onKeyDown={onEnterPress}
+                normalizeOnBlur={normalizeOnBlur}
             />
             <div className="field__select">
                 <Field
