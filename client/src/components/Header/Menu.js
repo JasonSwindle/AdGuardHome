@@ -1,10 +1,9 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import enhanceWithClickOutside from 'react-click-outside';
 import classnames from 'classnames';
 import { Trans, withTranslation } from 'react-i18next';
-import { formatQueryParams } from '../../helpers/helpers';
 import { SETTINGS_URLS, FILTERS_URLS, MENU_URLS } from '../../helpers/constants';
 import Dropdown from '../ui/Dropdown';
 
@@ -22,7 +21,7 @@ const MENU_ITEMS = [
     // Filters dropdown should have visual order 2
 
     {
-        route: `${MENU_URLS.logs}${formatQueryParams('', '')}`,
+        route: MENU_URLS.logs,
         icon: 'log',
         text: 'query_log',
         order: 3,
@@ -140,7 +139,7 @@ class Menu extends Component {
             'mobile-menu--active': this.props.isMenuOpen,
         });
         return (
-            <Fragment>
+            <>
                 <div className={menuClass}>
                     <ul className="nav nav-tabs border-0 flex-column flex-lg-row flex-nowrap">
                         {MENU_ITEMS.map((item) => (
@@ -175,7 +174,7 @@ class Menu extends Component {
                         </li>
                     </ul>
                 </div>
-            </Fragment>
+            </>
         );
     }
 }

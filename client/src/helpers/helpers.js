@@ -619,5 +619,9 @@ export const selectCompletedFields = (values) => Object.entries(values)
         return acc;
     }, {});
 
-export const
-    formatQueryParams = (search, response_status) => `/search=${search}&response_status=${response_status}`;
+/**
+ * @param search {string}
+ * @param response_status {string}
+ * @returns {string}
+ */
+export const getLogsUrlParams = (search, response_status) => `?search=${search}&response_status=${response_status}`;

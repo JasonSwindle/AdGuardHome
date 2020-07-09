@@ -3,14 +3,15 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import './LogsSearchLink.css';
-import { formatQueryParams } from '../../helpers/helpers';
+import { getLogsUrlParams } from '../../helpers/helpers';
+import { MENU_URLS } from '../../helpers/constants';
 
 const LogsSearchLink = ({
-    search = '', response_status = '', children, link = '/logs',
+    search = '', response_status = '', children, link = MENU_URLS.logs,
 }) => {
     const { t } = useTranslation();
 
-    const to = link === '/logs' ? `/logs${formatQueryParams(search, response_status)}` : link;
+    const to = link === MENU_URLS.logs ? `${MENU_URLS.logs}${getLogsUrlParams(search, response_status)}` : link;
 
     return <Link to={to}
                  className={'stats__link'}

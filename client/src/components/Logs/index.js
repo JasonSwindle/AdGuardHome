@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { Trans } from 'react-i18next';
 import Modal from 'react-modal';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import queryString from 'query-string';
 import {
     BLOCK_ACTIONS,
     TABLE_DEFAULT_PAGE_SIZE,
@@ -21,7 +22,7 @@ import { getDnsConfig } from '../../actions/dnsConfig';
 import { getLogsConfig, resetLogsFilter, setLogsFilter } from '../../actions/queryLogs';
 import { addSuccessToast } from '../../actions/toasts';
 import './Logs.css';
-import { formatQueryParams } from '../../helpers/helpers';
+import { getLogsUrlParams } from '../../helpers/helpers';
 
 export const processContent = (data, buttonType) => Object.entries(data)
     .map(([key, value]) => {
@@ -54,7 +55,7 @@ export const processContent = (data, buttonType) => Object.entries(data)
 const Logs = (props) => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { response_status: response_status_url_param = '', search: search_url_param = '' } = useParams();
+    const { response_status: response_status_url_param = '', search: search_url_param = '' } = queryString.parse(history.location.search);
     const query = useSelector((state) => state.form[FORM_NAME.LOGS_FILTER]?.values);
 
     const search = query?.search ?? search_url_param;
@@ -70,7 +71,7 @@ const Logs = (props) => {
     useEffect(() => {
         (async () => {
             // todo: redirect if params is incorrect
-            history.push(`/logs${formatQueryParams(search, response_status)}`);
+            history.replace(`${getLogsUrlParams(search, response_status)}`);
             await dispatch(setLogsFilter({
                 search,
                 response_status,
