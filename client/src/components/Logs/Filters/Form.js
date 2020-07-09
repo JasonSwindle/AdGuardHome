@@ -70,6 +70,11 @@ renderFilterField.propTypes = {
     }).isRequired,
 };
 
+const FORM_NAMES = {
+    search: 'search',
+    response_status: 'response_status',
+};
+
 const Form = (props) => {
     const {
         className = '',
@@ -87,8 +92,9 @@ const Form = (props) => {
 
     const onInputClear = async () => {
         setIsLoading(true);
-        await change(DEFAULT_LOGS_FILTER);
         await dispatch(resetLogsFilter());
+        await change(FORM_NAMES.search, DEFAULT_LOGS_FILTER[FORM_NAMES.search]);
+        await change(FORM_NAMES.response_status, DEFAULT_LOGS_FILTER[FORM_NAMES.response_status]);
         setIsLoading(false);
     };
 
@@ -101,8 +107,8 @@ const Form = (props) => {
               }}
         >
             <Field
-                id="search"
-                name="search"
+                id={FORM_NAMES.search}
+                name={FORM_NAMES.search}
                 component={renderFilterField}
                 type="text"
                 className={classNames('form-control--search form-control--transparent', className)}
@@ -113,7 +119,7 @@ const Form = (props) => {
             />
             <div className="field__select">
                 <Field
-                    name="response_status"
+                    name={FORM_NAMES.response_status}
                     component="select"
                     className={classNames('form-control custom-select custom-select--logs custom-select__arrow--left ml-small form-control--transparent', responseStatusClass)}
                     onChange={zeroDelaySubmit}

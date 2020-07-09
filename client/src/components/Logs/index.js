@@ -153,8 +153,6 @@ const Logs = (props) => {
             dispatch(setLogsPage(TABLE_FIRST_PAGE)),
             dispatch(resetLogsFilter()),
         ]);
-        // todo: check reset
-        history.push('/logs');
         dispatch(addSuccessToast('query_log_updated'));
         setIsLoading(false);
     };

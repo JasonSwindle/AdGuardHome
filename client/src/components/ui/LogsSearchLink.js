@@ -1,11 +1,8 @@
 import React from 'react';
-import { Link, useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { setLogsFilter } from '../../actions/queryLogs';
 import './LogsSearchLink.css';
-import { RESPONSE_FILTER } from '../../helpers/constants';
 import { formatQueryParams } from '../../helpers/helpers';
 
 const LogsSearchLink = ({
