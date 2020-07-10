@@ -10,6 +10,7 @@ import {
     DEFAULT_LOGS_FILTER,
     FORM_NAME,
     RESPONSE_FILTER,
+    RESPONSE_FILTER_QUERIES,
 } from '../../../helpers/constants';
 import IconTooltip from '../../ui/IconTooltip';
 import { setLogsFilter } from '../../../actions/queryLogs';
@@ -104,19 +105,23 @@ const Form = (props) => {
         response_status, search,
     } = useSelector((state) => state.form[FORM_NAME.LOGS_FILTER].values, shallowEqual);
 
-    const trimmedSearch = search.trim();
     const [
         debouncedSearch,
         setDebouncedSearch,
-    ] = useDebounce(trimmedSearch, DEBOUNCE_FILTER_TIMEOUT);
+    ] = useDebounce(search.trim(), DEBOUNCE_FILTER_TIMEOUT);
 
     useEffect(() => {
         dispatch(setLogsFilter({
             response_status,
             search: debouncedSearch,
         }));
+
         history.replace(`${getLogsUrlParams(debouncedSearch, response_status)}`);
     }, [response_status, debouncedSearch]);
+
+    if (response_status && !(response_status in RESPONSE_FILTER_QUERIES)) {
+        change(FORM_NAMES.response_status, DEFAULT_LOGS_FILTER[FORM_NAMES.response_status]);
+    }
 
     const onInputClear = async () => {
         setIsLoading(true);
