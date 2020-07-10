@@ -129,7 +129,7 @@ const Logs = (props) => {
     };
 
     useEffect(() => {
-        mediaQuery.addListener(mediaQueryHandler);
+        mediaQuery.addEventListener('change', mediaQueryHandler);
 
         (async () => {
             setIsLoading(true);
