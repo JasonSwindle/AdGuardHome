@@ -129,6 +129,11 @@ export const resetFilteredLogs = () => async (dispatch) => {
     await dispatch(setFilteredLogs(DEFAULT_LOGS_FILTER));
 };
 
+export const refreshFilteredLogs = () => async (dispatch, getState) => {
+    const { filter } = getState().queryLogs;
+    await dispatch(setFilteredLogs(filter));
+};
+
 export const clearLogsRequest = createAction('CLEAR_LOGS_REQUEST');
 export const clearLogsFailure = createAction('CLEAR_LOGS_FAILURE');
 export const clearLogsSuccess = createAction('CLEAR_LOGS_SUCCESS');

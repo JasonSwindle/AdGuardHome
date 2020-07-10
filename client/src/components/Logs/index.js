@@ -18,10 +18,14 @@ import Disabled from './Disabled';
 import { getFilteringStatus } from '../../actions/filtering';
 import { getClients } from '../../actions';
 import { getDnsConfig } from '../../actions/dnsConfig';
-import { getLogsConfig, resetFilteredLogs, setFilteredLogs } from '../../actions/queryLogs';
+import {
+    getLogsConfig,
+    refreshFilteredLogs,
+    resetFilteredLogs,
+    setFilteredLogs,
+} from '../../actions/queryLogs';
 import { addSuccessToast } from '../../actions/toasts';
 import './Logs.css';
-import { getLogsUrlParams } from '../../helpers/helpers';
 
 export const processContent = (data, buttonType) => Object.entries(data)
     .map(([key, value]) => {
@@ -74,7 +78,6 @@ const Logs = (props) => {
 
     useEffect(() => {
         (async () => {
-            history.replace(`${getLogsUrlParams(search, response_status)}`);
             setIsLoading(true);
             await dispatch(setFilteredLogs({
                 search,
@@ -157,7 +160,7 @@ const Logs = (props) => {
         setIsLoading(true);
         await Promise.all([
             dispatch(setLogsPage(TABLE_FIRST_PAGE)),
-            dispatch(resetFilteredLogs()),
+            dispatch(refreshFilteredLogs()),
         ]);
         dispatch(addSuccessToast('query_log_updated'));
         setIsLoading(false);

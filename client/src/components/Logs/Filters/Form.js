@@ -115,12 +115,12 @@ const Form = (props) => {
             response_status,
             search: debouncedSearch,
         }));
+        history.replace(`${getLogsUrlParams(debouncedSearch, response_status)}`);
     }, [response_status, debouncedSearch]);
 
     const onInputClear = async () => {
         setIsLoading(true);
         setDebouncedSearch(DEFAULT_LOGS_FILTER[FORM_NAMES.search]);
-        history.replace(`${getLogsUrlParams('')}`);
         change(FORM_NAMES.search, DEFAULT_LOGS_FILTER[FORM_NAMES.search]);
         setIsLoading(false);
     };
@@ -133,7 +133,6 @@ const Form = (props) => {
 
     const normalizeOnBlur = (data) => data.trim();
 
-    // todo: handle set falsy empty string
     return (
         <form className="d-flex flex-wrap form-control--container"
               onSubmit={(e) => {

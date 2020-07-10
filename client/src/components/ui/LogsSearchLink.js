@@ -11,7 +11,7 @@ const LogsSearchLink = ({
 }) => {
     const { t } = useTranslation();
 
-    const to = link === MENU_URLS.logs ? `${MENU_URLS.logs}${getLogsUrlParams(search, response_status)}` : link;
+    const to = link === MENU_URLS.logs ? `${MENU_URLS.logs}${getLogsUrlParams(search && `"${search}"`, response_status)}` : link;
 
     return <Link to={to}
                  className={'stats__link'}
